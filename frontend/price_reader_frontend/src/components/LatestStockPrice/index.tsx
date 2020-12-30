@@ -5,12 +5,18 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 
+import { concat, differenceWith } from "lodash";
 import { Cell } from "react-table";
 
 import LatestStockPriceTable from "./LatestStockPriceTable";
 import UpdateFrequencyTextField from "./UpdateFrequencyField";
 import { symbols } from "../../constant/symbols";
 import { backendServerUrl } from "../../constant/server";
+
+type Data = {
+  symbol: string;
+  price: number;
+};
 
 const priceUpStyle = { color: "green" } as React.CSSProperties;
 const priceDownStyle = { color: "red" } as React.CSSProperties;
@@ -40,14 +46,22 @@ function LatestStockPricePage() {
           : "")
     );
     evtSource.current.addEventListener("message", (message) => {
-      setData(
-        JSON.parse(message.data).sort(
-          (
-            d1: { [symbol: string]: number },
-            d2: { [symbol: string]: number }
-          ) => d1.symbol > d2.symbol
-        )
-      );
+      setData((oldData: Data[]) => {
+        const newData = JSON.parse(message.data);
+
+        const dataDiff = differenceWith(
+          oldData,
+          newData,
+          (a: any, b: any) => a.symbol === b.symbol
+        );
+        const combinedData = concat(dataDiff, newData);
+
+        combinedData.sort((d1: Data, d2: Data) =>
+          d1.symbol < d2.symbol ? -1 : 1
+        );
+
+        return combinedData;
+      });
     });
     evtSource.current.addEventListener("error", (error) => {
       evtSource.current?.close();

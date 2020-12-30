@@ -4,4 +4,4 @@ from dataclasses import dataclass
 @dataclass
 class Ticker:
     symbol: str
-    price: int
+    price: int = 0
