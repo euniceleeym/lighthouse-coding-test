@@ -31,7 +31,7 @@ function LatestStockPriceTable({ columns, data }: IProps) {
     page,
     gotoPage,
     setPageSize,
-    state: { pageIndex, pageSize, selectedRowIds },
+    state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
