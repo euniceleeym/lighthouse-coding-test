@@ -10,9 +10,11 @@ from price_reader_backend.service.ticker_fetcher import TickerFetcher
 app = Flask(__name__)
 
 
-@app.route('/')
-def index():
-    return render_template('test.html')
+@app.after_request
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = 'http://127.0.0.1:3000'
+    return response
 
 
 @app.route('/stream')

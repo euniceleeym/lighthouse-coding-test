@@ -7,7 +7,9 @@ import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import { Cell } from "react-table";
 
 import LatestStockPriceTable from "./LatestStockPriceTable";
+import UpdateFrequencyTextField from "./UpdateFrequencyField";
 import { symbols } from "../../constant/symbols";
+import { backendServerUrl } from "../../constant/server";
 
 const priceUpStyle = { color: "green" } as React.CSSProperties;
 const priceDownStyle = { color: "red" } as React.CSSProperties;
@@ -21,6 +23,42 @@ const isPriceUp = (symbol: string, price: number): boolean | undefined => {
 };
 
 function LatestStockPricePage() {
+  var evtSource = React.useRef<EventSource | null>(null);
+  const [updateFrequency, setUpdateFrequency] = React.useState<
+    number | undefined
+  >(1000);
+  const [data, setData] = React.useState<Array<any>>([]);
+
+  React.useEffect(() => {
+    evtSource.current?.close();
+    evtSource.current = new EventSource(
+      backendServerUrl +
+        "/stream" +
+        (updateFrequency
+          ? "?update_frequency=" + updateFrequency!.toString()
+          : "")
+    );
+    evtSource.current.addEventListener("message", (message) => {
+      setData(
+        JSON.parse(message.data).sort(
+          (
+            d1: { [symbol: string]: number },
+            d2: { [symbol: string]: number }
+          ) => d1.symbol > d2.symbol
+        )
+      );
+    });
+    evtSource.current.addEventListener("error", (error) => {
+      evtSource.current?.close();
+      alert("Connection error. Please try again in a while.");
+    });
+  }, [updateFrequency]);
+
+  const handleUpdateFrequencyChange = (updateFrequency: number) => {
+    evtSource.current?.close();
+    setUpdateFrequency(updateFrequency);
+  };
+
   const columns = React.useMemo(
     () => [
       {
@@ -55,20 +93,14 @@ function LatestStockPricePage() {
     []
   );
 
-  const data = React.useMemo(
-    () => [
-      { symbol: "AAAA", price: 123 },
-      { symbol: "BBBB", price: 4560 },
-      { symbol: "CCCC", price: 1230 },
-      { symbol: "DDDD", price: 456 },
-      { symbol: "ZZZZ", price: 123 },
-    ],
-    []
-  );
-
   return (
     <div>
       <CssBaseline />
+      <UpdateFrequencyTextField
+        onChange={(updateFrequency) => {
+          handleUpdateFrequencyChange(updateFrequency);
+        }}
+      />
       <LatestStockPriceTable columns={columns} data={data} />
     </div>
   );
