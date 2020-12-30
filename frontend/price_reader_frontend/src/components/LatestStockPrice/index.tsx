@@ -1,5 +1,6 @@
 import React from "react";
 
+import Box from "@material-ui/core/Box";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
@@ -26,7 +27,7 @@ function LatestStockPricePage() {
   var evtSource = React.useRef<EventSource | null>(null);
   const [updateFrequency, setUpdateFrequency] = React.useState<
     number | undefined
-  >(1000);
+  >();
   const [data, setData] = React.useState<Array<any>>([]);
 
   React.useEffect(() => {
@@ -94,15 +95,21 @@ function LatestStockPricePage() {
   );
 
   return (
-    <div>
+    <Box p={1} m={1}>
       <CssBaseline />
-      <UpdateFrequencyTextField
-        onChange={(updateFrequency) => {
-          handleUpdateFrequencyChange(updateFrequency);
-        }}
-      />
+      <Box p={1} m={1}>
+        <h1>LIVE Stock Price</h1>
+      </Box>
+      <Box display="flex" flexDirection="row-reverse" p={1} m={1}>
+        <UpdateFrequencyTextField
+          onChange={(updateFrequency) => {
+            handleUpdateFrequencyChange(updateFrequency);
+          }}
+        />
+      </Box>
+
       <LatestStockPriceTable columns={columns} data={data} />
-    </div>
+    </Box>
   );
 }
 
