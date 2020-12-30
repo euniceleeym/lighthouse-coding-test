@@ -11,7 +11,7 @@ fake = Faker()
 
 @fixture
 def symbols():
-    return fake.pylist(nb_elements=55, value_types='str')
+    return fake.pylist(nb_elements=55, variable_nb_elements=False, value_types='str')
 
 
 @fixture
@@ -28,6 +28,7 @@ class TestTickerFetcher:
     ])
     def test_fetch(symbols, stock_price_fetcher, start_index, elements_per_update,
                    expected_num_of_stock_price_fetch):
+
         ticker_fetcher = TickerFetcher(symbols, stock_price_fetcher)
         result = ticker_fetcher.fetch(start_index, elements_per_update)
 
