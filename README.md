@@ -1,11 +1,11 @@
-# lighthouse-coding-test
+# server_sent_event_sample
 
 ## Backend
 
 ### How to start backend service
 
 ```
-cd lighthouse-coding-test
+cd server_sent_event_sample
 python -m virtuelenv venv
 source venv/bin/activate
 cd backend
@@ -25,7 +25,7 @@ pytest
 ### How to start backend service
 
 ```
-cd lighthouse-coding-test/frontend/price_reader_frontend
+cd server_sent_event_sample/frontend/price_reader_frontend
 npm install
 npm start
 ```
